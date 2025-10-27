@@ -1,18 +1,21 @@
 import express, { Request, Response } from "express";
 import prisma from "../prisma/client";
+import { JobStatus } from "@prisma/client";
 
 export const createEditJob = async (req: Request, res: Response) => {
     try {
-        const {inputUrl, prompt} = req.body;
+        const prompt = req.body.prompt;
+        const inputPath = req.file?.path;
 
-        if(!inputUrl || !prompt) {
+        if(!inputPath || !prompt) {
             return res.status(400).json({message: "give all"});
         }
 
         const newJob = await prisma.editJob.create({
             data: {
-                inputUrl,
-                prompt
+                inputUrl: inputPath,
+                prompt,
+                status: JobStatus.PROCESSING
             }
         })
 
