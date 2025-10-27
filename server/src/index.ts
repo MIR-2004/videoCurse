@@ -1,14 +1,10 @@
-import express, { type Request, type Response } from "express";
+import express, { Request, Response } from "express";
 
 const app = express();
-const PORT = 3000;
-
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("active");
+    res.json("hii there")
 })
 
-app.listen(PORT, () => {
-    console.log(`server running at port ${PORT}`);
-})
+app.listen(3000);
