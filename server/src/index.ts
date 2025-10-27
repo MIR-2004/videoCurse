@@ -1,10 +1,12 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import cors from "cors";
+import editJobRoutes from "./routes/editJobRouter"
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-    res.json("hii there")
-})
+app.use("/api/jobs", editJobRoutes);
 
-app.listen(3000);
+app.listen(3000, () => console.log("Server running on http://localhost:3000"));
