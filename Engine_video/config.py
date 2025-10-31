@@ -1,3 +1,3 @@
-API_KEY = "your-secure-api-key-123"   # change this in production!
+API_KEY = "your-secure-api-key-123"  
 INPUT_DIR = "./uploads"
 OUTPUT_DIR = "./outputs"

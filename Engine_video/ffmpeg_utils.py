@@ -1,7 +1,6 @@
 import subprocess
 import re
 from pathlib import Path
-import shutil
 
 
 def safe_filename(name):

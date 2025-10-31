@@ -1,7 +1,5 @@
 import subprocess
-import cv2
 import os
-import tempfile
 from pathlib import Path
 from ffmpeg_utils import (
     ffmpeg_trim, ffmpeg_adjust_contrast, ffmpeg_adjust_brightness,
