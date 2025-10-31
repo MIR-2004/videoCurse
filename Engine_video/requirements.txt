@@ -2,3 +2,7 @@ fastapi
 uvicorn
 opencv-python
 ffmpeg-python
+# Note: FFmpeg and FFprobe must be installed separately on the system
+# For Ubuntu/Debian: sudo apt install ffmpeg
+# For Windows: Download from https://ffmpeg.org/download.html
+# For macOS: brew install ffmpeg

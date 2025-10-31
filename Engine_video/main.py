@@ -1,10 +1,13 @@
 from fastapi import FastAPI, UploadFile, Form, HTTPException, Header
 from fastapi.responses import FileResponse
-import os, json
+import os
+import json
 from processor import process_video
 from config import API_KEY, INPUT_DIR, OUTPUT_DIR
+from ffmpeg_utils import validate_audio_present
 
 app = FastAPI(title="VidPrompt Video Engine")
+
 
 @app.post("/process")
 async def process(
@@ -32,7 +35,29 @@ async def process(
 
     output_path = os.path.join(OUTPUT_DIR, f"edited_{file.filename}")
 
-    # Process the video
-    process_video(input_path, actions_data, output_path)
+    # Check input audio status
+    input_has_audio = validate_audio_present(input_path)
+    print(
+        f"Input video '{file.filename}' audio: {'Present' if input_has_audio else 'Not present'}")
 
-    return {"status": "success", "output": output_path}
+    # Process the video
+    try:
+        process_video(input_path, actions_data, output_path)
+
+        # Verify audio preservation
+        output_has_audio = validate_audio_present(output_path)
+        audio_status = "preserved" if (
+            input_has_audio and output_has_audio) else "lost" if input_has_audio else "none"
+
+        return {
+            "status": "success",
+            "output": output_path,
+            "audio_status": audio_status,
+            "input_had_audio": input_has_audio,
+            "output_has_audio": output_has_audio
+        }
+
+    except Exception as e:
+        print(f"Video processing error: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Video processing failed: {str(e)}")
