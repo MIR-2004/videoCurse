@@ -54,13 +54,13 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
   )
 
   return (
-    <div className='flex flex-col border-r border-white/10'>
-      <div className='flex items-center justify-between border-b border-white/5 px-6 py-4 text-sm text-zinc-300'>
-        <div className='flex items-center gap-3'>
-          <button className='rounded-md bg-purple-500/80 px-4 py-1.5 text-sm font-medium text-black transition hover:bg-purple-400'>
+    <div className='flex h-full min-w-[320px] max-w-[360px] flex-col border-r border-white/10 bg-[#0b0f15]'>
+      <div className='flex items-center justify-between border-b border-white/5 px-6 py-4 text-sm text-zinc-200'>
+        <div className='inline-flex items-center gap-2 rounded-lg bg-[#11161d] p-1 text-xs font-medium text-zinc-400'>
+          <button className='rounded-md bg-gradient-to-b from-purple-500 to-purple-600 px-4 py-1.5 text-sm font-semibold text-black shadow-sm shadow-purple-900/50 transition hover:from-purple-400 hover:to-purple-500'>
             Import
           </button>
-          <button className='rounded-md border border-white/10 px-4 py-1.5 transition-colors hover:border-white/30 hover:text-white'>
+          <button className='rounded-md px-4 py-1.5 text-sm text-zinc-300 transition hover:bg-white/5 hover:text-white'>
             Record
           </button>
         </div>
@@ -68,20 +68,20 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
           <input
             type='search'
             placeholder='Search project media'
-            className='w-52 rounded-md border border-white/10 bg-[#090c12] px-3 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:border-purple-500/60 focus:outline-none'
+            className='w-48 rounded-md border border-white/10 bg-[#090c12] px-3 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-500 focus:border-purple-500/60 focus:outline-none'
           />
         </div>
       </div>
-      <div className='flex-1 overflow-auto px-5 py-3' onDragOver={handleDragOver} onDrop={handleDrop}>
+      <div className='flex-1 overflow-auto px-6 py-4' onDragOver={handleDragOver} onDrop={handleDrop}>
         <div
-          className='flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-500/40 bg-[#11161d]/70 text-center text-sm text-zinc-400 transition hover:border-purple-400 hover:text-white'
+          className='flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-purple-500/40 bg-[#11161d]/70 text-center text-sm text-zinc-400 shadow-inner shadow-purple-900/10 transition hover:border-purple-400 hover:bg-[#151c26] hover:text-white'
           onClick={handleBrowse}
         >
           <div className='rounded-full bg-purple-500/20 p-2.5 text-purple-400'>
             ⭳
           </div>
           <div>
-            <p className='font-medium text-white'>Drop your video clips, images, or audio here</p>
+            <p className='font-semibold text-white'>Drop your video clips, images, or audio here</p>
             <p className='text-xs text-zinc-500'>Or click to browse from your computer</p>
           </div>
           <button className='rounded-md border border-white/10 px-4 py-1 text-xs uppercase tracking-wide text-zinc-300 transition hover:border-purple-500/50 hover:text-white'>
@@ -98,7 +98,7 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
                 {files.length === 1 ? '' : 's'}
               </span>
             </div>
-            <ul className='grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4'>
+            <ul className='grid grid-cols-2 gap-4 lg:grid-cols-2 xl:grid-cols-3'>
               {files.map((file) => (
                 <li
                   key={file.id}

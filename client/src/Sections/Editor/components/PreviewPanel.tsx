@@ -5,24 +5,22 @@ type PreviewPanelProps = {
 }
 
 const PreviewPanel: FC<PreviewPanelProps> = ({ activeVideoUrl }) => (
-  <aside className='flex h-full flex-col bg-[#090c12]'>
-    <div className='flex items-center justify-between border-b border-white/5 px-5 py-2.5 text-sm text-zinc-300'>
+  <aside className='flex h-full min-w-[420px] flex-col border-l border-white/10 bg-[#0a0d14]'>
+    <div className='flex items-center justify-between border-b border-white/5 px-6 py-3 text-sm text-zinc-300'>
       <span className='font-semibold text-white'>Preview</span>
       <span className='rounded border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-zinc-500'>1/2</span>
     </div>
-    <div className='flex flex-1 items-center justify-center px-4 py-2'>
-      <div className='w-full rounded-lg border border-white/10 bg-black/90 p-2'>
+    <div className='flex flex-1 flex-col gap-5 overflow-auto px-6 py-6'>
+      <div className='w-full overflow-hidden rounded-xl border border-white/10 bg-black/90 shadow-lg shadow-purple-900/20'>
         {activeVideoUrl ? (
-          <video src={activeVideoUrl} controls className='aspect-video w-full max-h-40 rounded-md bg-black' />
+          <video src={activeVideoUrl} controls className='aspect-video w-full max-h-[380px] rounded-lg bg-black' />
         ) : (
-          <div className='grid h-full place-items-center rounded-md border border-dashed border-white/10 p-4 text-center text-sm text-zinc-500'>
+          <div className='grid h-full min-h-[220px] place-items-center rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-zinc-500'>
             Select or drop a video to preview
           </div>
         )}
       </div>
-    </div>
-    <div className='border-t border-white/5 px-5 py-1.5 text-xs text-zinc-400'>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between rounded-lg border border-white/10 bg-[#0d121b] px-4 py-3 text-xs text-zinc-400'>
         <div className='flex items-center gap-3'>
           <button className='rounded border border-white/10 px-2 py-1 transition-colors hover:border-white/40 hover:text-white'>
             ⟲
@@ -34,12 +32,12 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ activeVideoUrl }) => (
             ⟳
           </button>
         </div>
-        <div className='flex items-center gap-3'>
-          <span>00:00:00:00</span>
+        <div className='flex items-center gap-3 text-xs text-zinc-300'>
+          <span className='tracking-wide'>00:00:00:00</span>
           <span className='rounded border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide'>Fit</span>
         </div>
       </div>
-    </div>
+  </div>
   </aside>
 )
 

@@ -1,6 +1,45 @@
+import os
+import shutil
 import subprocess
 import re
 from pathlib import Path
+
+from config import FFMPEG_PATH
+
+
+DEFAULT_FFMPEG_NAME = "ffmpeg.exe" if os.name == "nt" else "ffmpeg"
+
+
+def _resolve_ffmpeg_bin() -> str:
+    if FFMPEG_PATH:
+        candidate = Path(FFMPEG_PATH)
+        if candidate.is_dir():
+            executable = candidate / DEFAULT_FFMPEG_NAME
+            if executable.is_file():
+                return str(executable)
+        elif candidate.is_file():
+            return str(candidate)
+
+    discovered = shutil.which("ffmpeg")
+    if discovered:
+        return discovered
+
+    return DEFAULT_FFMPEG_NAME
+
+
+FFMPEG_BIN = _resolve_ffmpeg_bin()
+
+
+def _prepare_ffmpeg_cmd(cmd):
+    resolved = list(cmd)
+    if not resolved:
+        raise ValueError("FFmpeg command cannot be empty")
+    resolved[0] = FFMPEG_BIN
+    return [str(part) for part in resolved]
+
+
+def run_ffmpeg_command(cmd):
+    return subprocess.run(_prepare_ffmpeg_cmd(cmd), check=True, capture_output=True)
 
 
 def safe_filename(name):
@@ -28,7 +67,7 @@ def ffmpeg_trim(input_path, output_path, seconds):
         str(output_path)
     ]
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg error:", e.stderr.decode())
         raise
@@ -61,7 +100,7 @@ def ffmpeg_adjust_contrast(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg contrast adjustment error:", e.stderr.decode())
         raise
@@ -95,7 +134,7 @@ def ffmpeg_adjust_brightness(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg brightness adjustment error:", e.stderr.decode())
         raise
@@ -128,7 +167,7 @@ def ffmpeg_adjust_saturation(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg saturation adjustment error:", e.stderr.decode())
         raise
@@ -161,7 +200,7 @@ def ffmpeg_adjust_hue(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg hue adjustment error:", e.stderr.decode())
         raise
@@ -194,7 +233,7 @@ def ffmpeg_adjust_gamma(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg gamma adjustment error:", e.stderr.decode())
         raise
@@ -227,7 +266,7 @@ def ffmpeg_apply_blur(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg blur effect error:", e.stderr.decode())
         raise
@@ -260,7 +299,7 @@ def ffmpeg_apply_sharpen(input_path, output_path, value):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
     except subprocess.CalledProcessError as e:
         print("FFmpeg sharpen effect error:", e.stderr.decode())
         raise
@@ -294,7 +333,7 @@ def ffmpeg_adjust_speed(input_path, output_path, speed_factor):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Applied {speed}x speed adjustment")
     except subprocess.CalledProcessError as e:
         print("FFmpeg speed adjustment error:", e.stderr.decode())
@@ -329,7 +368,7 @@ def ffmpeg_rotate_video(input_path, output_path, degrees):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Rotated video by {degrees} degrees")
     except subprocess.CalledProcessError as e:
         print("FFmpeg rotation error:", e.stderr.decode())
@@ -368,7 +407,7 @@ def ffmpeg_flip_video(input_path, output_path, direction):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Flipped video {direction}")
     except subprocess.CalledProcessError as e:
         print("FFmpeg flip error:", e.stderr.decode())
@@ -399,7 +438,7 @@ def ffmpeg_crop_video(input_path, output_path, x, y, width, height):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Cropped video to {width}x{height} at ({x},{y})")
     except subprocess.CalledProcessError as e:
         print("FFmpeg crop error:", e.stderr.decode())
@@ -435,7 +474,7 @@ def ffmpeg_scale_video(input_path, output_path, width, height):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Scaled video to {width}x{height}")
     except subprocess.CalledProcessError as e:
         print("FFmpeg scale error:", e.stderr.decode())
@@ -466,7 +505,7 @@ def ffmpeg_adjust_volume(input_path, output_path, volume_db):
     ]
 
     try:
-        subprocess.run(cmd, check=True, capture_output=True)
+        run_ffmpeg_command(cmd)
         print(f"✅ Adjusted volume by {volume_db}dB")
     except subprocess.CalledProcessError as e:
         print("FFmpeg volume adjustment error:", e.stderr.decode())
@@ -542,7 +581,7 @@ def ffmpeg_cut_section(input_path, output_path, start_time, end_time):
             str(part1_path)
         ]
 
-        subprocess.run(cmd1, check=True, capture_output=True)
+        run_ffmpeg_command(cmd1)
 
         # Step 2: Extract second part (end_time to end of video)
         print(f"📹 Extracting second part: {end_time}s to end")
@@ -554,7 +593,7 @@ def ffmpeg_cut_section(input_path, output_path, start_time, end_time):
             str(part2_path)
         ]
 
-        subprocess.run(cmd2, check=True, capture_output=True)
+        run_ffmpeg_command(cmd2)
 
         # Step 3: Create concat list file for FFmpeg
         with open(concat_list_path, 'w') as f:
@@ -572,7 +611,7 @@ def ffmpeg_cut_section(input_path, output_path, start_time, end_time):
             str(output_path)
         ]
 
-        subprocess.run(cmd3, check=True, capture_output=True)
+        run_ffmpeg_command(cmd3)
 
         print(
             f"✅ Successfully cut section {start_time}s-{end_time}s from video")

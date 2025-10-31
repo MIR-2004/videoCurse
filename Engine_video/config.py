@@ -16,3 +16,4 @@ CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 
 # FFmpeg Configuration
 FFMPEG_TIMEOUT = int(os.getenv("FFMPEG_TIMEOUT", "300"))  # 5 minutes default
+FFMPEG_PATH = os.getenv("FFMPEG_PATH")

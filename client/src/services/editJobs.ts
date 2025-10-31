@@ -2,25 +2,16 @@ const apiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.replace
 
 const EDIT_JOBS_ENDPOINT = `${apiBaseUrl}/api/jobs`;
 
-export type EditJobStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
-
-export type EditJob = {
-  id: string;
-  inputUrl: string;
-  outputUrl: string | null;
-  prompt: string;
-  parsedCommand: unknown;
-  status: EditJobStatus;
-};
-
-type CreateEditJobPayload = {
+export type CreateEditJobPayload = {
   prompt: string;
   video: File;
   signal?: AbortSignal;
 };
 
-type FetchEditJobOptions = {
-  signal?: AbortSignal;
+export type CreateEditJobResult = {
+  success: boolean;
+  jobId: string;
+  outputUrl: string | null;
 };
 
 const parseErrorMessage = async (response: Response) => {
@@ -33,7 +24,7 @@ const parseErrorMessage = async (response: Response) => {
   return response.statusText || "Request failed";
 };
 
-export const createEditJob = async ({ prompt, video, signal }: CreateEditJobPayload): Promise<EditJob> => {
+export const createEditJob = async ({ prompt, video, signal }: CreateEditJobPayload): Promise<CreateEditJobResult> => {
   const formData = new FormData();
   formData.append("prompt", prompt);
   formData.append("video", video);
@@ -48,32 +39,15 @@ export const createEditJob = async ({ prompt, video, signal }: CreateEditJobPayl
     throw new Error(await parseErrorMessage(response));
   }
 
-  const data = (await response.json()) as { success?: boolean; job?: EditJob };
+  const data = (await response.json()) as Partial<CreateEditJobResult>;
 
-  if (!data?.job) {
+  if (!data?.jobId) {
     throw new Error("Invalid response from server");
   }
 
-  return data.job;
+  return {
+    success: data.success ?? true,
+    jobId: data.jobId,
+    outputUrl: typeof data.outputUrl === "string" && data.outputUrl.length > 0 ? data.outputUrl : null,
+  };
 };
-
-export const getEditJob = async (id: string, { signal }: FetchEditJobOptions = {}): Promise<EditJob> => {
-  const response = await fetch(`${EDIT_JOBS_ENDPOINT}/${id}`, {
-    method: "GET",
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(await parseErrorMessage(response));
-  }
-
-  const data = (await response.json()) as { job?: EditJob };
-
-  if (!data?.job) {
-    throw new Error("Invalid response from server");
-  }
-
-  return data.job;
-};
-
-

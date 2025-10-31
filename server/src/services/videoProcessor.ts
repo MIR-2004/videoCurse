@@ -2,7 +2,6 @@ import axios from "axios";
 import fs from "fs";
 import FormData from "form-data";
 import { spawn } from "child_process";
-import path from "path";
 
 export const processWithPython = async (videoPath: string, actions: any) => {
   const formData = new FormData();
@@ -10,11 +9,62 @@ export const processWithPython = async (videoPath: string, actions: any) => {
   formData.append("file", fs.createReadStream(videoPath));
   formData.append("actions", JSON.stringify(actions));
 
-  const response = await axios.post(process.env.PYTHON_BACKEND!, formData, {
-    headers: formData.getHeaders(),
-  });
+  const engineBaseUrl = (process.env.ENGINE_URL || "http://localhost:8000").replace(/\/$/, "");
+  const pythonBackendUrl =
+    process.env.PYTHON_BACKEND?.replace(/\/$/, "") || `${engineBaseUrl}/process`;
 
-  return response.data.outputPath;
+  const apiKey =
+    process.env.PYTHON_BACKEND_API_KEY ??
+    process.env.PYTHON_API_KEY ??
+    process.env.ENGINE_API_KEY ??
+    process.env.API_KEY;
+
+  const headers = {
+    ...formData.getHeaders(),
+    ...(apiKey ? { "x-api-key": apiKey } : {}),
+  };
+
+  try {
+    const response = await axios.post(pythonBackendUrl, formData, {
+      headers,
+    });
+
+    const data = response.data ?? {};
+
+    if (data.status && data.status !== "success") {
+      throw new Error(
+        typeof data.detail === "string"
+          ? data.detail
+          : `Python backend responded with status "${data.status}"`,
+      );
+    }
+
+    const outputPath = data.outputPath ?? data.output;
+
+    if (!outputPath || typeof outputPath !== "string") {
+      console.error("[processWithPython] Missing output path in response", data);
+      throw new Error("Python backend did not return an output path");
+    }
+
+    return outputPath;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("[processWithPython] Request failed", {
+        url: pythonBackendUrl,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+      });
+      throw new Error(
+        `Python backend request failed: ${
+          error.response?.data?.detail || error.message
+        }`,
+      );
+    }
+
+    console.error("[processWithPython] Unexpected error", error);
+    throw new Error("Python backend request failed");
+  }
 };
 
 export const videoProcessor = {
