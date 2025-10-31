@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react'
 import type { ChangeEvent, DragEvent, FC } from 'react'
 
+import { EDITOR_MEDIA_DRAG_DATA_KEY } from '../types'
 import type { DroppedFile } from '../types'
 
 type MediaPanelProps = {
@@ -30,6 +31,14 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
 
   const handleDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
     event.preventDefault()
+  }, [])
+
+  const handleItemDragStart = useCallback((event: DragEvent<HTMLElement>, file: DroppedFile) => {
+    if (file.kind !== 'video') return
+
+    event.dataTransfer.setData('text/plain', file.id)
+    event.dataTransfer.setData(EDITOR_MEDIA_DRAG_DATA_KEY, file.id)
+    event.dataTransfer.effectAllowed = 'copy'
   }, [])
 
   const handleInputChange = useCallback(
@@ -63,12 +72,12 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
           />
         </div>
       </div>
-      <div className='flex-1 overflow-auto px-6 py-6' onDragOver={handleDragOver} onDrop={handleDrop}>
+      <div className='flex-1 overflow-auto px-5 py-3' onDragOver={handleDragOver} onDrop={handleDrop}>
         <div
-          className='flex h-48 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-purple-500/40 bg-[#11161d]/70 text-center text-sm text-zinc-400 transition hover:border-purple-400 hover:text-white'
+          className='flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-500/40 bg-[#11161d]/70 text-center text-sm text-zinc-400 transition hover:border-purple-400 hover:text-white'
           onClick={handleBrowse}
         >
-          <div className='rounded-full bg-purple-500/20 p-3 text-purple-400'>
+          <div className='rounded-full bg-purple-500/20 p-2.5 text-purple-400'>
             ⭳
           </div>
           <div>
@@ -81,7 +90,7 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
         </div>
 
         {files.length > 0 && (
-          <div className='mt-8 space-y-4'>
+          <div className='mt-6 space-y-4'>
             <div className='flex items-center justify-between text-xs text-zinc-400'>
               <span className='uppercase tracking-[0.3em] text-[10px] text-zinc-500'>Project Assets</span>
               <span>
@@ -94,14 +103,18 @@ const MediaPanel: FC<MediaPanelProps> = ({ files, onFilesAdded, onSelectVideo })
                 <li
                   key={file.id}
                   className='group rounded-lg border border-white/10 bg-[#0b0f15] p-2 transition-colors hover:border-purple-500/40 hover:bg-[#121922]'
+                  draggable={file.kind === 'video'}
+                  onDragStart={(event) => handleItemDragStart(event, file)}
                 >
                   <div className='mb-2 h-28 w-full overflow-hidden rounded-md border border-white/10 bg-black'>
                     {file.kind === 'image' ? (
                       <img src={file.url} alt={file.file.name} className='h-full w-full object-cover' />
                     ) : (
                       <button
+                        draggable
                         className='grid h-full w-full place-items-center text-xs text-zinc-300 transition-colors group-hover:text-white'
                         onClick={() => onSelectVideo(file.url)}
+                        onDragStart={(event) => handleItemDragStart(event, file)}
                         title={file.file.name}
                       >
                         ▶

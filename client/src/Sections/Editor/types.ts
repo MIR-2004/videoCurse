@@ -1,3 +1,5 @@
+export const EDITOR_MEDIA_DRAG_DATA_KEY = 'videocurse/editor-media-id'
+
 export type DroppedFile = {
   id: string
   file: File
@@ -8,5 +10,14 @@ export type DroppedFile = {
 export type LibraryItem = {
   name: string
   count: number
+}
+
+export type TimelineClip = {
+  id: string
+  fileId: DroppedFile['id']
+  name: string
+  start: number
+  duration: number
+  url: string
 }
 
