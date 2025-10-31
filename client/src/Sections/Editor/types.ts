@@ -21,3 +21,9 @@ export type TimelineClip = {
   url: string
 }
 
+export type AssistantMessage = {
+  id: string
+  role: 'assistant' | 'user'
+  content: string
+}
+
