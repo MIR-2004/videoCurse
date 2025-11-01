@@ -5,7 +5,7 @@ type PreviewPanelProps = {
 }
 
 const PreviewPanel: FC<PreviewPanelProps> = ({ activeVideoUrl }) => (
-  <aside className='flex h-full min-w-[420px] flex-col border-l border-white/10 bg-[#0a0d14]'>
+  <aside className='flex flex-1 min-h-0 min-w-[420px] flex-col bg-[#0a0d14]'>
     <div className='flex items-center justify-between border-b border-white/5 px-6 py-3 text-sm text-zinc-300'>
       <span className='font-semibold text-white'>Preview</span>
       <span className='rounded border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-zinc-500'>1/2</span>
@@ -15,8 +15,8 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ activeVideoUrl }) => (
         {activeVideoUrl ? (
           <video src={activeVideoUrl} controls className='aspect-video w-full max-h-[380px] rounded-lg bg-black' />
         ) : (
-          <div className='grid h-full min-h-[220px] place-items-center rounded-lg border border-dashed border-white/10 p-6 text-center text-sm text-zinc-500'>
-            Select or drop a video to preview
+          <div className='grid h-full min-h-[220px] place-items-center rounded-lg bg-black/70 p-6 text-center text-sm text-zinc-500'>
+            Select a video from your media library to preview.
           </div>
         )}
       </div>

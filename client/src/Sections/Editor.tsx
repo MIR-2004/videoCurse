@@ -1,24 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import AssistantPanel from './Editor/components/AssistantPanel'
-import EditorHeader from './Editor/components/EditorHeader'
-import EditorNavigation from './Editor/components/EditorNavigation'
 import MediaPanel from './Editor/components/MediaPanel'
 import PreviewPanel from './Editor/components/PreviewPanel'
-import ProjectSidebar from './Editor/components/ProjectSidebar'
 import TimelinePanel from './Editor/components/TimelinePanel'
 import { useEditorMedia } from './Editor/hooks/useEditorMedia'
-import type { AssistantMessage, DroppedFile, LibraryItem, TimelineClip } from './Editor/types'
+import type { AssistantMessage, DroppedFile, TimelineClip } from './Editor/types'
 import { createEditJob } from '../services/editJobs'
-
-const NAV_ITEMS = ['Assemble', 'Adjust', 'Audio', 'Export']
-
-const DEFAULT_LIBRARY_ITEMS: LibraryItem[] = [
-  { name: 'Brand Toolkit', count: 5 },
-  { name: 'B-Roll Clips', count: 18 },
-  { name: 'Sound Effects', count: 26 },
-  { name: 'Color LUTs', count: 7 },
-]
 
 const TIMELINE_TICKS = Array.from({ length: 13 }, (_, index) => index * 5)
 
@@ -128,47 +116,22 @@ const Editor = () => {
     [],
   )
 
-  const showTimelinePlaceholder = timelineClips.length === 0
-
   return (
-    <div className='flex min-h-screen flex-col bg-[#05070b] text-white'>
-      <EditorHeader />
-      <EditorNavigation navItems={NAV_ITEMS} />
+    <div className='flex h-screen flex-col bg-[#05070b] text-white'>
       <div className='flex flex-1 overflow-hidden'>
-        <ProjectSidebar libraryItems={DEFAULT_LIBRARY_ITEMS} />
         <MediaPanel files={files} onFilesAdded={handleFilesAdded} onSelectVideo={handleSelectVideo} />
-        <div className='flex flex-1 flex-col bg-[#080b11]'>
-          <div className='flex flex-1 overflow-hidden'>
-            <div className='flex flex-1 flex-col border-r border-white/10 bg-[#0a0d14]'>
-              <div className='flex flex-1 items-center justify-center px-8 text-sm text-zinc-500'>
-                {showTimelinePlaceholder ? (
-                  <div className='rounded-lg border border-dashed border-white/10 px-6 py-8 text-center leading-relaxed'>
-                    <p className='text-zinc-300'>Drop clips from the media panel onto the timeline to build your sequence.</p>
-                    <p className='mt-2 text-xs text-zinc-500'>Select any video to preview it on the right. The assistant can automate trims, color work, and more.</p>
-                  </div>
-                ) : (
-                  <div className='flex h-full w-full items-center justify-center'>
-                    <video
-                      src={activeVideoUrl ?? timelineClips[timelineClips.length - 1]?.url}
-                      controls
-                      className='max-h-[70%] max-w-[80%] rounded-lg border border-white/10 bg-black shadow-xl shadow-purple-900/30'
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <PreviewPanel activeVideoUrl={activeVideoUrl} />
-            <AssistantPanel
-              messages={messages}
-              videoFiles={files}
-              defaultVideoId={defaultVideoId}
-              isProcessing={isProcessing}
-              error={assistantError}
-              onSubmit={handleAssistantSubmit}
-            />
-          </div>
+        <div className='flex flex-1 min-h-0 flex-col overflow-hidden border-l border-white/10 bg-[#080b11]'>
+          <PreviewPanel activeVideoUrl={activeVideoUrl} />
           <TimelinePanel timelineTicks={TIMELINE_TICKS} waveform={WAVEFORM} clips={timelineClips} onDropClip={handleDropClip} />
         </div>
+        <AssistantPanel
+          messages={messages}
+          videoFiles={files}
+          defaultVideoId={defaultVideoId}
+          isProcessing={isProcessing}
+          error={assistantError}
+          onSubmit={handleAssistantSubmit}
+        />
       </div>
     </div>
   )
