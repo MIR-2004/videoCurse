@@ -51,9 +51,8 @@ def ffmpeg_trim(input_path, output_path, seconds):
     input_path = Path(input_path)
     output_path = Path(output_path)
 
-    # Always make a fresh safe output filename
-    safe_name = safe_filename(input_path.stem)
-    output_path = Path(output_path.parent) / f"{safe_name}_trimmed.mp4"
+    # Ensure destination directory exists
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Ensure old file removed
     if output_path.exists():
