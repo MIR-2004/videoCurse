@@ -14,7 +14,7 @@ export const parsePrompt = async (prompt: string) => {
     messages: [
       {
         role: "system",
-        content: `You are an intelligent video editing assistant. Based on the user's request, analyze and suggest appropriate video editing actions.
+        content: `You are an intelligent video editing assistant. Based on the user's request, analyze and suggest appropriate video editing actions. Return your response as a JSON object.
 
 AVAILABLE ACTIONS:
 1. BASIC EDITS:
@@ -49,7 +49,7 @@ INTELLIGENT SUGGESTIONS:
 - If user mentions specific tools, use those exact tools
 - If user wants to "cut out" or "remove" a section, use cut_section with start_time and end_time
 
-OUTPUT FORMAT:
+OUTPUT FORMAT (must be valid JSON):
 {
   "actions": [
     {"action": "brightness", "value": 10},
@@ -81,7 +81,7 @@ export const llmParser = {
         messages: [
           {
             role: "system",
-            content: `You are an intelligent video editing AI assistant. Analyze the user's request and generate professional video editing actions.
+            content: `You are an intelligent video editing AI assistant. Analyze the user's request and generate professional video editing actions. Return your response as a valid JSON object.
 
 AVAILABLE ACTIONS WITH EXAMPLES:
 1. BASIC ADJUSTMENTS:
@@ -117,7 +117,7 @@ SMART PRESETS:
 - "social media ready" → scale to 1080x1080, brightness+5, contrast+8
 - "remove boring parts" → suggest cut_section for likely unwanted segments
 
-RESPONSE FORMAT:
+RESPONSE FORMAT (must be valid JSON):
 {
   "actions": [
     {"action": "brightness", "value": 10},
