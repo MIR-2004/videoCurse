@@ -87,6 +87,10 @@ const Editor = () => {
       try {
         const result = await createEditJob({ prompt, video: videoFile.file })
 
+        if (result.outputUrl) {
+          setActiveVideoUrl(result.outputUrl)
+        }
+
         const assistantText = result.outputUrl
           ? `✨ Edit complete! Download your clip here: ${result.outputUrl}`
           : `✅ Edit request sent. Track job ${result.jobId} for the processed video.`
@@ -113,7 +117,7 @@ const Editor = () => {
         setIsProcessing(false)
       }
     },
-    [],
+    [setActiveVideoUrl],
   )
 
   return (
